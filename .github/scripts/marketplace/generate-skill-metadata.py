@@ -1141,7 +1141,7 @@ def main(argv: list[str] | None = None) -> int:
                 diffs.append(d)
         if diffs:
             print(
-                "DRIFT DETECTED. Run `python3 .github/scripts/"
+                "DRIFT DETECTED. Run `python3 .github/scripts/marketplace/"
                 "generate-skill-metadata.py` and commit the regenerated files.",
                 file=sys.stderr,
             )

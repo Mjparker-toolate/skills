@@ -18,9 +18,11 @@ on:
     paths:
       - ".github/scripts/marketplace/**"
       - ".github/scripts/aggregate_benchmarks.py"
+      - ".github/scripts/tests/**"
       - ".github/workflows/generate-skill-metadata.yml"
       - "components.d/**"
       - "skills.sh.json"
+      - "skills/**/SKILL.md"
       - "skills/**/BENCHMARK.md"
       - "benchmarks.json"
   workflow_dispatch:
@@ -58,6 +60,9 @@ jobs:
 
       - name: Install Python deps
         run: pip install --upgrade pyyaml jsonschema
+
+      - name: Test metadata and benchmark scripts
+        run: python3 -m unittest discover -s .github/scripts/tests -v
 
       # Runs before the byte-stability check: it induces enrichment failures
       # against a stub inference API to cover the recovery and reporting paths,
