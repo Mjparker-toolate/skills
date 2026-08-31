@@ -17,12 +17,27 @@ The following NVIDIA-related skills are configured as global requirements and wi
 
 **Availability Rule:** These skills will be automatically surfaced and callable whenever a query is determined to be relevant to NVIDIA technologies, CUDA programming, or GPU acceleration.
 
-#### Registered NVIDIA Skills:
-- `nvidia-cuda-development` — CUDA C/C++ programming, kernel optimization, memory management
-- `nvidia-ai-frameworks` — TensorFlow/PyTorch on NVIDIA GPUs, inference optimization
-- `nvidia-rapids` — cuML, cuDF, cuGraph data processing
-- `nvidia-triton` — Model serving and inference on NVIDIA hardware
-- `nvidia-gpu-optimization` — Performance profiling, optimization techniques
+#### Registered NVIDIA Skills (from NVIDIA/skills repository):
+- `cuopt-*` — NVIDIA cuOpt numerical optimization
+- `nemo-*` — NVIDIA NeMo LLM/language model skills (20+ variants)
+- `nv-medical-ai` — Medical AI frameworks from NVIDIA
+- `tao-*` — NVIDIA TAO (Transfer Learning Toolkit) skills
+- `rapids-cudf` — Accelerated DataFrame processing with cuDF
+- `cudaq-guide` — Quantum computing development
+- `jetson-*` — Edge AI on Jetson hardware
+- `holoscan-*` — Medical imaging SDK
+- `earth2studio-*` — Earth science AI models
+- `vss-*` — Vector Search Services (15+ skills)
+- `dali-*` — Data pipeline acceleration
+- `deepstream-*` — Streaming analytics
+- `dynamo-*` — NVIDIA Dynamo capabilities
+- `mcore-*` — Model core frameworks
+- `rag-*` — Retrieval-augmented generation
+- `nemotron-*` — NeMotron model variants
+- `portfolio-optimization` — Financial portfolio optimization
+- `skill-card-generator` — Skill metadata and documentation
+- `omniverse-*` — Digital twin and simulation
+- `physical-ai-*` — Physical AI research tools
 
 ## Repository Skills
 
