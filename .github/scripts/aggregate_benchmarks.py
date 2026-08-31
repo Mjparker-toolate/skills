@@ -19,11 +19,13 @@ import re
 import sys
 from pathlib import Path
 
-# Two report layouts are in circulation and both must parse:
+# Three report layouts are in circulation and all must parse:
 #   v1 — "Evaluation Report" with an Evaluation Summary list, an "Agents Used"
 #        list, and a "## Results" table keyed on Dimension.
 #   v2 — SkillEvaluator 0.9.x, with an "Evaluation Metadata" list, agents on a
 #        single line, and a "## Results at a Glance" table keyed on Measure.
+#   v3 — SkillEvaluator 1.3.x, which keeps the v2 table shape, adds evaluator
+#        provenance fields, and omits the per-dimension Num column.
 # Each field lists its patterns most-specific first; the first match wins.
 SUMMARY_FIELDS = {
     "skill": [re.compile(r"^- Skill: `?([^`\n]+)`?\s*$")],
@@ -99,7 +101,13 @@ FLOAT_FIELDS = {"pass_threshold_pct"}
 #
 # Remove this once SkillEvaluator emits the threshold as a real per-run field
 # and the parser reads it again.
-MIGRATING_FIELDS = {"pass_threshold_pct"}
+# v3 also removed the per-dimension Num column. Num was an explicit evaluated
+# sample denominator, not tasks * attempts_per_task: those values differ in
+# many v1/v2 reports, so deriving it would fabricate data. Preserve None for
+# v3 and allow the documented migration while still guarding every other
+# flat-result field. Remove this exemption if a future report emits an
+# explicit per-dimension denominator again.
+MIGRATING_FIELDS = {"pass_threshold_pct", "results.num"}
 
 
 def parse_uplift(raw):
@@ -215,8 +223,8 @@ def null_rate_regressions(old: dict, new: dict) -> dict:
     """Fields that lost values between two benchmarks.json generations.
 
     Returns {field: (old_null_count, new_null_count)} for every field whose
-    null count rose, counted only over skills present in BOTH files so that
-    newly added skills cannot register as a regression.
+    null count rose, counted only over skills and result rows present in BOTH
+    files so that newly added records cannot register as a regression.
 
     This is the generic guard against silent degradation: a regeneration can
     succeed, keep a valid schema, pass --check, and still quietly empty a
@@ -241,6 +249,32 @@ def null_rate_regressions(old: dict, new: dict) -> dict:
         now = sum(1 for s in common if new_by_skill[s].get(field) is None)
         if now > was:
             regressions[field] = (was, now)
+
+    # Results are stored as a separate flat table rather than nested under
+    # each skill, so guard their fields independently. The stable row key is
+    # skill x dimension x agent; newly added rows are ignored for the same
+    # reason newly added skills are ignored above.
+    def result_key(row):
+        return (row["catalog_dir"], row["dimension"], row["agent"])
+
+    old_by_result = {result_key(r): r for r in old.get("results", [])}
+    new_by_result = {result_key(r): r for r in new.get("results", [])}
+    common_results = old_by_result.keys() & new_by_result.keys()
+    result_fields = {
+        field
+        for row in common_results
+        for field in (*old_by_result[row], *new_by_result[row])
+        if field not in {"catalog_dir", "dimension", "agent"}
+    }
+    for field in sorted(result_fields):
+        was = sum(
+            1 for row in common_results if old_by_result[row].get(field) is None
+        )
+        now = sum(
+            1 for row in common_results if new_by_result[row].get(field) is None
+        )
+        if now > was:
+            regressions[f"results.{field}"] = (was, now)
     return regressions
 
 

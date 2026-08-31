@@ -3,20 +3,22 @@
 # SPDX-License-Identifier: Apache-2.0
 """Tests for aggregate_benchmarks.py report parsing.
 
-Fixtures are verbatim BENCHMARK.md files from the catalog, one per report
-layout in circulation:
+Fixtures are verbatim BENCHMARK.md files from the catalog covering the v2 and
+v3 report layouts:
 
   v2 — SkillEvaluator 0.9.x  (skills/cuopt-developer, evaluated 2026-06)
   v3 — SkillEvaluator 1.3.x  (skills/nemotron-speech, evaluated 2026-08)
 
-v3 dropped two fields the parser read (`NVSkills-Eval profile` and
-`Pass threshold`) and added three it does not (`Evaluator version`,
-`Dataset digest`, `Validation status`).
+v3 dropped three fields the parser read (`NVSkills-Eval profile`,
+`Pass threshold`, and the per-dimension `Num` column) and added three
+provenance fields (`Evaluator version`, `Dataset digest`, and
+`Validation status`).
 
 `profile` is now retired: NVSkills-Eval is an internal name and does not
 belong in a published report, so the parser no longer looks for it.
-`pass_threshold_pct` is kept and left None on v3 — it is a real provenance
-value that v3 turned into template prose. These tests pin both decisions.
+`pass_threshold_pct` and result `num` are kept and left None on v3 — they are
+real measurements that cannot be reconstructed from template prose or other
+summary fields. These tests pin those decisions and the new provenance fields.
 """
 
 import sys
@@ -33,7 +35,7 @@ V3 = FIXTURES / "v3_nemotron_speech.md"
 
 
 class TestV3ProvenanceFields(unittest.TestCase):
-    """v3 carries per-run provenance the parser currently discards."""
+    """v3 per-run provenance must be preserved in the aggregate."""
 
     def test_captures_evaluator_version(self):
         entry = agg.parse_benchmark(V3)
@@ -73,7 +75,7 @@ class TestNoFabricatedProvenance(unittest.TestCase):
         self.assertIsNone(entry["pass_threshold_pct"])
 
     def test_profile_is_not_emitted_at_all(self):
-        """Retired field: absent from every entry, both layouts."""
+        """Retired field: absent from both fixture layouts."""
         self.assertNotIn("profile", agg.parse_benchmark(V3))
         self.assertNotIn("profile", agg.parse_benchmark(V2))
 
@@ -93,6 +95,17 @@ class TestExistingBehaviourStillWorks(unittest.TestCase):
         self.assertEqual(entry["tasks"], 18)
         self.assertEqual(entry["attempts_per_task"], 1)
         self.assertEqual(entry["verdict"], "PASS")
+
+    def test_v3_does_not_fabricate_an_omitted_result_count(self):
+        """Num is a per-dimension denominator, not tasks x attempts."""
+        entry = agg.parse_benchmark(V3)
+        self.assertTrue(entry["results"])
+        self.assertEqual({row["num"] for row in entry["results"]}, {None})
+
+    def test_v2_keeps_explicit_result_count(self):
+        entry = agg.parse_benchmark(V2)
+        self.assertTrue(entry["results"])
+        self.assertEqual({row["num"] for row in entry["results"]}, {3})
 
 
 class TestNullRateRegressionGuard(unittest.TestCase):
@@ -130,6 +143,45 @@ class TestNullRateRegressionGuard(unittest.TestCase):
         new = {"skills": [{"skill": "a", "environment": "k8s-sandbox"},
                           {"skill": "b", "environment": None}]}
         self.assertEqual(agg.null_rate_regressions(old, new), {})
+
+    def test_flags_a_flat_result_field_that_lost_values(self):
+        old = {
+            "skills": [],
+            "results": [{
+                "catalog_dir": "a",
+                "dimension": "Correctness",
+                "agent": "codex",
+                "num": 4,
+            }],
+        }
+        new = {
+            "skills": [],
+            "results": [{
+                "catalog_dir": "a",
+                "dimension": "Correctness",
+                "agent": "codex",
+                "num": None,
+            }],
+        }
+        regressions = agg.null_rate_regressions(old, new)
+        self.assertEqual(regressions["results.num"], (0, 1))
+
+    def test_ignores_result_rows_absent_from_the_old_file(self):
+        """A new result row with empty fields is not a regression."""
+        old = {"skills": [], "results": []}
+        new = {
+            "skills": [],
+            "results": [{
+                "catalog_dir": "a",
+                "dimension": "Correctness",
+                "agent": "codex",
+                "num": None,
+            }],
+        }
+        self.assertEqual(agg.null_rate_regressions(old, new), {})
+
+    def test_result_count_migration_is_explicitly_exempt(self):
+        self.assertIn("results.num", agg.MIGRATING_FIELDS)
 
 
 if __name__ == "__main__":
