@@ -65,11 +65,14 @@ RUN_DIR="$(mktemp -d -t vercel-optimize-XXXXXX)"
 Run from the linked app directory or pass `--cwd` where a script supports it. Keep stdout JSON separate from stderr logs. Do not combine streams.
 
 ```bash
-node scripts/collect-signals.mjs [projectId] > "$RUN_DIR/vercel-signals.json" 2> "$RUN_DIR/collect.stderr"
+# Resolve skill directory path from this SKILL.md location
+SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+node "$SKILL_DIR/scripts/collect-signals.mjs" [projectId] > "$RUN_DIR/vercel-signals.json" 2> "$RUN_DIR/collect.stderr"
 node -e 'JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"))' "$RUN_DIR/vercel-signals.json"
 
-node scripts/scan-codebase.mjs <repo-root> > "$RUN_DIR/codebase.json"
-node scripts/merge-signals.mjs "$RUN_DIR/vercel-signals.json" "$RUN_DIR/codebase.json" --out "$RUN_DIR/signals.json"
+node "$SKILL_DIR/scripts/scan-codebase.mjs" <repo-root> > "$RUN_DIR/codebase.json"
+node "$SKILL_DIR/scripts/merge-signals.mjs" "$RUN_DIR/vercel-signals.json" "$RUN_DIR/codebase.json" --out "$RUN_DIR/signals.json"
 ```
 
 Collection details, schemas, metric IDs, and degradation behavior live in [references/data-collection.md](references/data-collection.md). The metric registry is [lib/queries.mjs](lib/queries.mjs); keep all queries on the shared 14-day window.

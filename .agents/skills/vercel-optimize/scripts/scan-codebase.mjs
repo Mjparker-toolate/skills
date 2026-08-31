@@ -124,7 +124,9 @@ async function collectFiles(root) {
     try {
       const content = await readFile(full, 'utf-8');
       if (content.length > 500_000) continue;
-      out.push({ path: relative(root, full), content });
+      // Normalize Windows backslashes to forward slashes for consistent glob matching
+      const normalizedPath = relative(root, full).replace(/\\/g, '/');
+      out.push({ path: normalizedPath, content });
     } catch {}
   }
   return out;

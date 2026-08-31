@@ -27,17 +27,39 @@ const CONFIG_RE = /export\s+const\s+config\s*=\s*\{[^}]*\b(isr|prerender|runtime
 
 export function scan({ files }) {
   const out = [];
+  const filesByDirectory = new Map();
+
+  // Group files by their directory to check sibling exports
   for (const { path, content } of files) {
     if (!path.includes('/routes/')) continue;
-    if (PRERENDER_RE.test(content) || SSR_RE.test(content) || CONFIG_RE.test(content)) continue;
-    out.push({
-      pattern: metadata.id,
-      file: path,
-      // Absence-finding — no specific line, placeholder 1.
-      line: 1,
-      evidence: 'No `prerender`, `ssr`, or `config = { isr | runtime | ... }` export found',
-      trafficIndependent: metadata.trafficIndependent,
-    });
+
+    const dir = path.replace(/\/\+page\.(svelte|server\.(ts|js)|ts|js)$/, '');
+    if (!filesByDirectory.has(dir)) {
+      filesByDirectory.set(dir, []);
+    }
+    filesByDirectory.get(dir).push({ path, content });
   }
+
+  // Check each directory's page files for any prerender/ssr/config declarations
+  for (const [dir, dirFiles] of filesByDirectory.entries()) {
+    const hasConfig = dirFiles.some(({ content }) =>
+      PRERENDER_RE.test(content) || SSR_RE.test(content) || CONFIG_RE.test(content)
+    );
+
+    if (hasConfig) continue; // Skip if any sibling has config
+
+    // Add findings for +page.svelte files only (since sibling .ts/.js have config)
+    for (const { path, content } of dirFiles) {
+      if (!path.endsWith('+page.svelte')) continue;
+      out.push({
+        pattern: metadata.id,
+        file: path,
+        line: 1,
+        evidence: 'No `prerender`, `ssr`, or `config = { isr | runtime | ... }` export found in sibling route modules',
+        trafficIndependent: metadata.trafficIndependent,
+      });
+    }
+  }
+
   return out;
 }

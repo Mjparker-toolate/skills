@@ -66,9 +66,18 @@ This is the ideal state. The project is linked and has git integration.
    ```bash
    git add .
    git commit -m "deploy: <description of changes>"
-   git push
+   
+   # Check current branch to avoid unintended production deploys
+   CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+   
+   # If on production branch (main/master), create a preview branch instead
+   if [ "$CURRENT_BRANCH" = "main" ] || [ "$CURRENT_BRANCH" = "master" ]; then
+     git push -u origin "deploy-$(date +%s)"
+   else
+     git push
+   fi
    ```
-   Vercel automatically builds from the push. Non-production branches get preview deployments; the production branch (usually `main`) gets a production deployment.
+   Vercel automatically builds from the push. Non-production branches get preview deployments; pushing to the production branch (usually `main`) gets a production deployment, so this defaults to creating a preview branch unless the user explicitly requests production.
 
 3. **Retrieve the preview URL.** If the CLI is authenticated:
    ```bash

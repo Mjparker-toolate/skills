@@ -17,17 +17,18 @@ detect_framework() {
         return
     fi
 
-    local content=$(cat "$pkg_json")
+    # Parse package.json and extract dependencies sections
+    local deps=$(node -e "const pkg = JSON.parse(require('fs').readFileSync('$pkg_json', 'utf8')); const all = {...(pkg.dependencies || {}), ...(pkg.devDependencies || {})}; console.log(Object.keys(all).join('\n'))" 2>/dev/null || echo "")
 
     # Helper to check if a package exists in dependencies or devDependencies.
     # Use exact matching by default, with a separate prefix matcher for scoped
     # package families like "@remix-run/".
     has_dep_exact() {
-        echo "$content" | grep -q "\"$1\""
+        echo "$deps" | grep -q "^$1$"
     }
 
     has_dep_prefix() {
-        echo "$content" | grep -q "\"$1"
+        echo "$deps" | grep -q "^$1"
     }
 
     # Order matters - check more specific frameworks first
@@ -263,7 +264,26 @@ MAX_ATTEMPTS=60  # 5 minutes max (60 * 5 seconds)
 ATTEMPT=0
 
 while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
-    HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$PREVIEW_URL")
+    # Retry polling on transient errors (DNS, TLS, timeout, connection failures)
+    HTTP_STATUS=""
+    RETRY_COUNT=0
+    MAX_RETRIES=3
+
+    while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+        HTTP_STATUS=$(curl -s --max-time 5 -o /dev/null -w "%{http_code}" "$PREVIEW_URL" 2>/dev/null) && break
+        RETRY_COUNT=$((RETRY_COUNT + 1))
+        if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+            sleep 1
+        fi
+    done
+
+    # If all retries failed, skip this attempt
+    if [ -z "$HTTP_STATUS" ]; then
+        echo "Polling error (retried $MAX_RETRIES times), continuing..." >&2
+        ATTEMPT=$((ATTEMPT + 1))
+        sleep 5
+        continue
+    fi
 
     if [ "$HTTP_STATUS" -eq 200 ]; then
         echo "" >&2

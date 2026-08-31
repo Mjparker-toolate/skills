@@ -249,7 +249,10 @@ async function main() {
   const hardRegenIndexes = new Set(regenPlan.map((p) => p.index));
   const qualityDroppedIndexes = new Set(
     qualityCheck.dropped
-      .map((d) => recsGraded.findIndex((g) => g.rec === d.rec))
+      .map((d) => {
+        const found = recsGraded.find((g) => g.rec === d.rec);
+        return found ? found.index : -1;
+      })
       .filter((i) => i >= 0)
   );
   const needsReviewIndexes = new Set(

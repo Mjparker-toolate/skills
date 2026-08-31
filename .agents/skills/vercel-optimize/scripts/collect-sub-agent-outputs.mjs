@@ -71,10 +71,25 @@ async function main() {
     const byRef = new Map();
     for (const item of collected) {
       const ref = item.record.candidateRef;
-      if (!expected.some((b) => b.candidateRef === ref)) {
+      const expectedBrief = expected.find((b) => b.candidateRef === ref);
+      if (!expectedBrief) {
         errors.push(`${item.sourcePath}: unknown candidateRef ${ref}`);
         continue;
       }
+
+      // Validate affectedFiles and findingRefs against manifest allowlist
+      const allowedFiles = expectedBrief.files || [];
+      const affectedFiles = item.record.affectedFiles || [];
+      const findingRefs = item.record.findingRefs || [];
+      const filesToCheck = [...affectedFiles, ...findingRefs];
+
+      for (const file of filesToCheck) {
+        if (allowedFiles.length > 0 && !allowedFiles.includes(file)) {
+          errors.push(`${item.sourcePath}: affectedFile/findingRef '${file}' not in allowed files for ${ref}`);
+          continue;
+        }
+      }
+
       if (byRef.has(ref)) {
         errors.push(`${item.sourcePath}: duplicate output for candidateRef ${ref}`);
         continue;
@@ -158,6 +173,7 @@ function readExpectedBriefs(manifest) {
       group: b.group ?? null,
       index: b.index ?? i,
       candidateRef: b.candidateRef,
+      files: Array.isArray(b.files) ? b.files : [],
     };
   });
 }

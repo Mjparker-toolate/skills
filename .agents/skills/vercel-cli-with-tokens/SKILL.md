@@ -17,21 +17,20 @@ Before running any Vercel CLI commands, identify where the token is coming from.
 ### A) `VERCEL_TOKEN` is already set in the environment
 
 ```bash
-printenv VERCEL_TOKEN
+[ -n "$VERCEL_TOKEN" ] && echo "Token is set" || echo "Token is not set"
 ```
 
-If this returns a value, you're ready. Skip to Step 2.
+If this confirms the token is set, you're ready. Skip to Step 2.
 
 ### B) Token is in a `.env` file under `VERCEL_TOKEN`
 
 ```bash
-grep '^VERCEL_TOKEN=' .env 2>/dev/null
-```
-
-If found, export it:
-
-```bash
-export VERCEL_TOKEN=$(grep '^VERCEL_TOKEN=' .env | cut -d= -f2-)
+if grep -q '^VERCEL_TOKEN=' .env 2>/dev/null; then
+  echo "Token found in .env"
+  export VERCEL_TOKEN=$(grep '^VERCEL_TOKEN=' .env | cut -d= -f2-)
+else
+  echo "Token not found in .env"
+fi
 ```
 
 ### C) Token is in a `.env` file under a different name
@@ -39,12 +38,13 @@ export VERCEL_TOKEN=$(grep '^VERCEL_TOKEN=' .env | cut -d= -f2-)
 Look for any variable that looks like a Vercel token (Vercel tokens typically start with `vca_`):
 
 ```bash
-grep -i 'vercel' .env 2>/dev/null
+grep -i 'vercel' .env 2>/dev/null | head -1
 ```
 
-Inspect the output to identify which variable holds the token, then export it as `VERCEL_TOKEN`:
+Inspect the output to identify which variable holds the token. Then ask the user to confirm it, and do NOT paste the token value into chat. Export it as `VERCEL_TOKEN`:
 
 ```bash
+# Use the variable name you identified (do not paste the token value)
 export VERCEL_TOKEN=$(grep '^<VARIABLE_NAME>=' .env | cut -d= -f2-)
 ```
 

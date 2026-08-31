@@ -811,6 +811,7 @@ export async function detectStack(cwd = process.cwd()) {
     vercelFlagsPackages,
     hasWorkflowPackage: workflowPackages.length > 0,
     workflowPackages,
+    deps,
   };
 }
 
@@ -821,6 +822,7 @@ function baselineStack() {
     orm: 'none', isMonorepo: false, rootDirectory: null,
     hasVercelFlagsPackage: false, vercelFlagsPackages: [],
     hasWorkflowPackage: false, workflowPackages: [],
+    deps: {},
   };
 }
 
