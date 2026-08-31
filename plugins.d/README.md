@@ -7,7 +7,7 @@ parses these files and (re)generates:
 - `plugins/<name>/.claude-plugin/plugin.json`
 - `plugins/<name>/.codex-plugin/plugin.json`
 - `plugins/<name>/.cursor-plugin/plugin.json`
-- `plugins/<name>/skills/<skill-basename>/` &nbsp;**symlinks** into the canonical `skills/` catalog
+- `plugins/<name>/skills/<skill-basename>/` &nbsp;copies or symlinks from the canonical `skills/` catalog, according to `skill_files`
 - `.claude-plugin/marketplace.json` (top-level Claude marketplace registry)
 - `.agents/plugins/marketplace.json` (top-level Codex marketplace registry)
 - `.cursor-plugin/marketplace.json` (top-level Cursor marketplace registry)
@@ -19,14 +19,22 @@ license / capability defaults; per-plugin yaml fields override the defaults
 
 ## Source of truth
 
-The `skills/` directory is the single source of truth — every SKILL.md
-exists exactly once there. The plugin tree under `plugins/` is reconstructed
-from these YAML files on every build, so adding/removing a curated skill
-only requires editing the `include_skills:` list and re-running:
+The `skills/` directory is the authoritative source for skill payloads.
+Generated plugin trees may contain copies of those files when
+`skill_files: copy` is selected. The plugin tree under `plugins/` is
+reconstructed from these YAML files on every build, so adding or removing an
+included skill only requires editing the `include_skills:` list and re-running:
 
 ```sh
 .github/scripts/build-plugins.sh
 ```
+
+Do not hand-edit `plugins/` or the three top-level marketplace JSON files.
+Change `plugins.d/` and rebuild them. Do not hand-edit signed payloads under
+`skills/`; update them through the upstream sync and signing workflow. Keep
+these public, product-scoped specs free of personal or organization account
+preferences, private identifiers, credentials, tokens, private MCP endpoints,
+and agent memories; those belong in client-local configuration.
 
 ## `skill_files:` — copy vs symlink
 
@@ -35,8 +43,8 @@ Each plugin selects what kind of files end up under
 
 | Mode | What's on disk | Use when |
 |---|---|---|
-| `copy` (default) | real files (rsync) | publishing to Codex / Anthropic; required for `codex plugin add` (Codex drops symlinks during install) |
-| `symlink` | relative symlinks → `../../../skills/<Product>/<skill>` | shipping to Claude only or to `npx skills add` consumers; avoids duplication |
+| `copy` (default) | real files (rsync) | all generated clients; required for `codex plugin add`, which drops symlinks during install |
+| `symlink` | relative symlinks → `../../../skills/<Product>/<skill>` | Claude installs and `npx skills add` consumers when Codex local marketplace installation is not needed |
 
 The default lives in [`_defaults.yml`](./_defaults.yml); override per
 plugin by setting `skill_files: symlink` (or `copy`) in
@@ -58,7 +66,7 @@ plugin by setting `skill_files: symlink` (or `copy`) in
    ```
 
 2. Run `.github/scripts/build-plugins.sh`.
-3. Commit the regenerated `plugins/<name>/` tree and the updated
+3. Commit the regenerated `plugins/<name>/` tree and all three updated
    `marketplace.json` files alongside the new yaml.
 
 ## Renaming a plugin
@@ -77,15 +85,15 @@ git rm -r plugins/old
 .github/scripts/build-plugins.sh
 ```
 
-The rebuild regenerates both `marketplace.json` files for you; just
+The rebuild regenerates all three `marketplace.json` files for you; just
 `git add` everything that changed (the renamed yaml, the new
-`plugins/new/` tree, the deleted `plugins/old/`, and both
+`plugins/new/` tree, the deleted `plugins/old/`, and all three
 `marketplace.json` files) and commit it all together.
 
 Heads up: the plugin name is what users type to install
-(`claude plugin install <name>`, `codex plugin add <name>`). If the old
-name has been published anywhere, renaming is a breaking change for
-those users.
+(`claude plugin install <name>@<marketplace>`,
+`codex plugin add <name>@<marketplace>`). If the old name has been published
+anywhere, renaming is a breaking change for those users.
 
 ## Curated (hand-maintained) plugins
 

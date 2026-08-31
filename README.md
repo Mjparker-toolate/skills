@@ -29,9 +29,9 @@ npx skills add nvidia/skills
 
 The CLI runs through `npx` and prompts you to choose a skill and install destination. You do not need to clone this repo or copy skill folders by hand.
 
-> **Requires a current `skills` CLI (v1.5.16 or newer).** Installing via `npx skills@latest add nvidia/skills` always uses the latest. On older CLIs (v1.5.15 and earlier), skills may install but not appear in Claude Code — see [Troubleshooting](docs/advanced-install.mdx#troubleshooting).
+> **Use a current `skills` CLI.** If an older cached release behaves differently from the examples below, retry with `npx skills@latest add nvidia/skills`. Also make sure your Node.js version satisfies the CLI package's published `engines` requirement. See [Troubleshooting](docs/advanced-install.mdx#troubleshooting).
 
-The skill is available the next time your agent loads skills and encounters a relevant task. For example, ask your agent to "solve a linear programming problem with cuOpt" and the skill guides it through the cuOpt Python API. In Claude Code, run `/reload-skills` to load newly installed skills in your current session.
+The skill is available the next time your agent loads skills and encounters a relevant task. For example, ask your agent to "solve a linear programming problem with cuOpt" and the skill guides it through the cuOpt Python API. Claude Code live-reloads standalone skills inside existing skill directories; restart it if the top-level skills directory did not exist when the session began. Marketplace plugins use `/reload-plugins` instead.
 
 ### Install One Skill Without Prompts
 
@@ -45,7 +45,7 @@ Replace `cuopt-numerical-optimization-api` with any skill name from the [Skill C
 
 ### Install for a Specific Agent
 
-Use `--agent` to target a specific AI coding agent. Initially, we'll support common client targets, expanding the list over time. For the full list of clients supported by the spec, see the [`skills` CLI Supported Agents table](https://github.com/vercel-labs/skills#supported-agents).
+Use `--agent` to target a specific AI coding agent. The examples below cover common clients. For the full current list, see the [`skills` CLI Supported Agents table](https://github.com/vercel-labs/skills#supported-agents).
 
 **Claude Code**
 
@@ -88,6 +88,37 @@ npx skills add nvidia/skills \
   --agent kiro-cli
 ```
 
+### Install the Claude Marketplace Plugin
+
+Use the generated Claude marketplace when you want catalog discovery as a namespaced plugin instead of a standalone skill. Run these commands inside Claude Code:
+
+```text
+/plugin marketplace add NVIDIA/skills
+/plugin install nvidia-skills@nvidia-official
+/reload-plugins
+```
+
+The plugin intentionally exposes one lightweight skill, `nvidia-skills:nvidia-skill-finder`. It does not declare MCP servers, so it appears in `/skills`, not `/mcp`.
+
+To test unpublished changes from a local clone without installing them, start Claude Code from the repository root with:
+
+```bash
+claude --plugin-dir ./plugins/nvidia-skills
+```
+
+Marketplace installs fetch the referenced repository revision; local commits are not available through `owner/repo` until they are pushed.
+
+### Install the Codex Marketplace Plugin
+
+Codex can install the same generated finder plugin from this repository:
+
+```bash
+codex plugin marketplace add NVIDIA/skills
+codex plugin add nvidia-skills@nvidia-official
+```
+
+To test unpublished changes from a local clone, replace `NVIDIA/skills` with the path to that clone. The Claude and Codex marketplace plugins both expose only the finder; install product skills on demand with the commands it recommends.
+
 ### Keep Skills Up to Date
 
 New skills land continuously, and existing ones are revised, renamed, or consolidated as the catalog evolves. Refresh what you have installed with:
@@ -96,7 +127,7 @@ New skills land continuously, and existing ones are revised, renamed, or consoli
 npx skills update
 ```
 
-Run it interactively and the CLI also flags skills that were removed or merged upstream (for example, when several skills are consolidated into one) and offers to remove the stale local copies. Use `npx skills list` to see what is installed and `npx skills check` to preview what is out of date first.
+Run it interactively and the CLI also flags skills that no longer exist upstream, including old names removed during a consolidation, and offers to remove the stale local copies. Use `npx skills list` for project installs and `npx skills list --global` for global installs. The update command applies changes after you choose a scope; it is not a dry-run preview.
 
 ### Browse the Catalog
 
@@ -296,14 +327,16 @@ NVIDIA/skills/
 │   ├── README.md                 # Schema and onboarding instructions
 │   └── <product>.yml             # one file per registered product
 ├── plugins/                     # Packaged plugin distributions
-│   └── nvidia-skills/            # Curated NVIDIA skills bundle (Claude Code, Codex)
+│   └── nvidia-skills/            # NVIDIA finder plugin (Claude Code, Codex, Cursor)
 ├── plugins.d/                   # Plugin build registry — config for `build-plugins.py`
 │   ├── README.md
 │   ├── _defaults.yml
 │   └── nvidia-skills.yml
 ├── .claude-plugin/              # Claude Code marketplace metadata
 │   └── marketplace.json
-├── .agents/plugins/             # Agent marketplace metadata (other clients)
+├── .agents/plugins/             # Codex marketplace metadata
+│   └── marketplace.json
+├── .cursor-plugin/              # Cursor marketplace metadata
 │   └── marketplace.json
 ├── docs/                        # Long-form documentation (published via Fern)
 │   ├── README.md                 # How to build the docs locally
