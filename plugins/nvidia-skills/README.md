@@ -1,7 +1,7 @@
 # Official NVIDIA Plugin
 
-This plugin is **not** part of the `nvidia/skills` self-hosted marketplace. It is curated for delivery to the official OpenAI Bundled and Anthropic Official marketplaces.
+This plugin is packaged for the repository's Claude, Codex, and Cursor marketplace manifests and for delivery to official partner marketplaces.
 
-The contents here (skills, plugin manifests) are generated from `plugins.d/nvidia.yml` by `.github/scripts/build-plugins.sh`. The yaml sets `marketplace_enabled.{claude,codex}: false`, which keeps it out of `.claude-plugin/marketplace.json` and `.agents/plugins/marketplace.json` while still producing a self-contained plugin folder ready to ship upstream.
+The contents here (skills and plugin manifests) are generated from `plugins.d/nvidia-skills.yml` by `.github/scripts/build-plugins.sh`. The current configuration enables the Claude, Codex, and Cursor marketplace entries and produces a self-contained plugin folder ready to ship upstream.
 
-To change which skills this plugin bundles, edit `plugins.d/nvidia.yml` and re-run the build script. Hand-maintained inside this directory: `assets/` (logo) and this README.
+To change which skills this plugin bundles, edit `plugins.d/nvidia-skills.yml` and re-run the build script. Hand-maintained inside this directory: `assets/` (logo) and this README.

@@ -1,7 +1,7 @@
 {
     "name": "nvidia-skills",
-    "version": "1.4.0",
-    "description": "Find the right NVIDIA skill for GPU acceleration, CUDA, AI agents, data loading, training, inference, robotics, Physical AI, Omniverse, simulation, and other NVIDIA-powered workflows.",
+    "version": "1.5.0",
+    "description": "Find the right NVIDIA skill for GPU acceleration, CUDA, AI agents, data science, training, inference, robotics, Physical AI, simulation, networking, healthcare, and other NVIDIA workflows.",
     "displayName": "NVIDIA Skills",
     "author": {
         "name": "NVIDIA",
@@ -16,16 +16,26 @@
         "cuda",
         "ai-agents",
         "data-loading",
+        "data-science",
+        "rapids",
+        "cudf",
         "training",
         "inference",
         "llm-serving",
+        "nemo",
+        "dynamo",
         "robotics",
+        "jetson",
+        "deepstream",
         "simulation",
         "omniverse",
         "openusd",
         "digital-twin",
         "physical-ai",
-        "cad"
+        "cad",
+        "cuopt",
+        "doca",
+        "medical-ai"
     ],
     "skills": [
         "./skills/"

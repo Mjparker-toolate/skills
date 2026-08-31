@@ -13,6 +13,19 @@ For the current catalog, use [skills.sh](https://www.skills.sh/nvidia/skills) or
 npx skills add nvidia/skills
 ```
 
+For broad access with minimal startup and context overhead, install only the catalog finder. It discovers task-specific skills from the live catalog instead of preloading the full collection:
+
+```bash
+npx skills add nvidia/skills \
+  --skill nvidia-skill-finder \
+  --agent claude-code \
+  --agent codex \
+  --global \
+  --yes
+```
+
+This keeps the catalog available to both Claude Code and Codex while loading detailed instructions only for the skills selected for the current task.
+
 ## Works Across Agents
 
 NVIDIA skills build on the open Agent Skills specification, so they are designed to work across compatible agent clients rather than being tied to one runtime.
@@ -33,8 +46,12 @@ Install a skill once, and the agent can load product-specific procedures, refere
 - Deploy, configure, evaluate, and troubleshoot RAG, AI-Q, NemoClaw, and agent sandbox workflows.
 - Bring up inference and serving workflows, for example with Dynamo skills.
 - Build, validate, and tune distributed model training, for example with NeMo, Megatron-Core, DALI, and Nemotron skills.
-- Accelerate data and scientific workloads, for example with cuDF, cuPyNumeric, CUDA-Q, Earth2Studio, PhysicsNeMo, and TileGym skills.
+- Accelerate data and scientific workloads, for example with cuDF, cuPyNumeric, Earth2Studio, PhysicsNeMo, and TileGym skills.
+- Develop quantum and hybrid quantum-classical applications with CUDA-Q.
 - Build vision, video, Physical AI, and Omniverse USD workflows, for example with DeepStream, Video Search and Summarization, CAD-to-SimReady conversion, realtime viewing, USD performance tuning, and neural reconstruction skills.
+- Set up and operate Jetson, Holoscan, sensor bridge, and robotics workflows from host preparation through device validation.
+- Process DICOM data, run medical imaging models, evaluate clinical speech systems, and build healthcare simulation workflows.
+- Configure and troubleshoot accelerated networking and storage on DOCA, BlueField DPUs, and ConnectX NICs.
 
 ## How Skills Are Discovered
 
@@ -43,15 +60,23 @@ The catalogs group skills by the kind of work the user is trying to do, while th
 | Group | What it covers | Example skill areas |
 |---|---|---|
 | Agentic AI | RAG, AI-Q, sandboxing, policy, evaluation, and agent workflow automation | RAG Blueprint, AI-Q, NemoClaw |
+| Physical AI | AI workflows that interact with the physical world, including edge devices, synthetic data, and embodied systems | Jetson, Holoscan, sensor bridge, Omniverse, and Physical AI Data Factory |
+| Robotics | Robot policies, applications, datasets, device integration, and validation | Isaac for Healthcare workflows and Jetson |
+| Robotics Simulation | Simulation-based robot development, training, replay, and scenario validation | Isaac for Healthcare scene, replay, catheter navigation, and end-to-end workflows |
+| Vision AI | Video analytics, search, summarization, medical imaging, perception pipelines, and model integration | DeepStream, VSS, TAO, DICOM, and NVIDIA medical AI |
 | Conversational AI | Speech NIMs, ASR/TTS/NMT deployment, ASR evaluation loops, and voice-agent workflows | Nemotron Speech (Riva ASR/TTS/NMT NIMs) and clinical ASR evaluation and fine-tuning workflows |
+| Simulation and Modeling | Weather, climate, physics-ML, scientific simulation, and physical-system modeling | Earth2Studio, PhysicsNeMo, and catheter navigation |
+| Digital Twins | Digital representations of physical assets and environments | CT-derived catheter-navigation digital twins |
 | Data Science | Data preparation, exploration, and accelerated analytics workflows | cuDF and cuPyNumeric |
-| Decision Optimization | Routing, scheduling, and numerical optimization | cuOpt routing and numerical optimization |
-| GPU Development | CUDA-adjacent kernel work, framework integration, and performance tuning | TileGym kernel development |
-| Inference AI | Model serving, deployment bring-up, runtime validation, and day-2 troubleshooting | Dynamo |
-| Simulation and Modeling | Weather, climate, quantum, physics-ML, and simulation workflows | Earth2Studio, CUDA-Q, PhysicsNeMo |
 | Training AI | Distributed training, checkpoint conversion, parallelism, resiliency, and training-stack CI | NeMo, Megatron-Core, DALI, Nemotron |
-| Vision AI | Video analytics, search, summarization, perception pipelines, and model import | DeepStream and Video Search and Summarization |
-| Physical AI and Omniverse | USD asset workflows, SimReady conversion, realtime viewing, infrastructure, and neural reconstruction | Omniverse and Physical AI workflows |
+| Inference AI | Model serving, deployment bring-up, runtime validation, benchmarking, and day-2 troubleshooting | Dynamo, Jetson LLM serving, and TAO inference services |
+| Decision Optimization | Routing, scheduling, portfolio optimization, and numerical optimization | cuOpt and Portfolio Optimization |
+| GPU Development | CUDA-adjacent kernel work, framework integration, video pipelines, and performance tuning | TileGym, Warp, Jetson video, and HoloHub modules |
+| Quantum Computing | Quantum and hybrid quantum-classical application development | CUDA-Q |
+| Infrastructure | Accelerated workload setup, deployment, cluster execution, device operation, and troubleshooting | Holoscan, Jetson, and TAO platform workflows |
+| AI Storage | Data protection and storage acceleration for AI infrastructure | DOCA erasure coding and storage acceleration |
+| Networking | Data-center, cluster, edge, and accelerated networking | DOCA, BlueField, ConnectX, DPA, RDMA, and GPUNetIO |
+| Cybersecurity | Threat detection and secure infrastructure workflows | DOCA Argus |
 
 ## Trust Controls
 

@@ -5,7 +5,7 @@
 
 **Official, NVIDIA-verified Agent Skills for Claude Code, Codex, and other coding agents.**
 
-[![NVIDIA](https://img.shields.io/badge/NVIDIA-Verified-76B900?style=flat&logo=nvidia&logoColor=white)](https://nvidia.com)
+[![NVIDIA][def]](https://nvidia.com)
 [![Agent Skills Spec](https://img.shields.io/badge/Agent%20Skills-Specification-blue)](https://agentskills.io)
 [![License](https://img.shields.io/badge/License-Apache%202.0%20%2B%20CC--BY--4.0-green.svg)](#license)
 
@@ -105,6 +105,21 @@ Use this when you want to see available NVIDIA skills before installing anything
 ```bash
 npx skills add nvidia/skills --list
 ```
+
+### Enable Catalog-Wide Discovery Without Preloading Every Skill
+
+If you regularly work across NVIDIA products, install only the lightweight skill finder globally:
+
+```bash
+npx skills add nvidia/skills \
+  --skill nvidia-skill-finder \
+  --agent claude-code \
+  --agent codex \
+  --global \
+  --yes
+```
+
+The finder checks the live catalog and recommends the smallest relevant set for each task. This keeps all current and future catalog skills discoverable in Claude Code and Codex without loading hundreds of skill descriptions and instruction bodies into every session. Add or remove `--agent` targets to match the agents installed on your machine.
 
 For non-interactive installs, global installs, agent-specific installs, updates, removals, and fallback manual copying, see [Advanced installation](docs/advanced-install.mdx).
 
@@ -342,3 +357,5 @@ This repository adheres to the [Agent Skills specification](https://agentskills.
 Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 This code is dual-licensed with documentation/skills under the CC-BY-4.0 AND source code under Apache-2.0 license terms. The full license texts can be found in [LICENSE-APACHE](LICENSE-APACHE) and [LICENSE-CC-BY-4.0](LICENSE-CC-BY-4.0) respectively.
+
+[def]: https://img.shields.io/badge/NVIDIA-Verified-76B900?style=flat&logo=nvidia&logoColor=white

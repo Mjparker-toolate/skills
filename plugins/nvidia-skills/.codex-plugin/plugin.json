@@ -1,7 +1,7 @@
 {
     "name": "nvidia-skills",
-    "version": "1.4.0",
-    "description": "Find the right NVIDIA skill for GPU acceleration, CUDA, AI agents, data loading, training, inference, robotics, Physical AI, Omniverse, simulation, and other NVIDIA-powered workflows.",
+    "version": "1.5.0",
+    "description": "Find the right NVIDIA skill for GPU acceleration, CUDA, AI agents, data science, training, inference, robotics, Physical AI, simulation, networking, healthcare, and other NVIDIA workflows.",
     "author": {
         "name": "NVIDIA",
         "url": "https://github.com/NVIDIA/skills"
@@ -15,22 +15,32 @@
         "cuda",
         "ai-agents",
         "data-loading",
+        "data-science",
+        "rapids",
+        "cudf",
         "training",
         "inference",
         "llm-serving",
+        "nemo",
+        "dynamo",
         "robotics",
+        "jetson",
+        "deepstream",
         "simulation",
         "omniverse",
         "openusd",
         "digital-twin",
         "physical-ai",
-        "cad"
+        "cad",
+        "cuopt",
+        "doca",
+        "medical-ai"
     ],
     "skills": "./skills/",
     "interface": {
         "displayName": "NVIDIA Skills",
         "shortDescription": "Find the right NVIDIA skill",
-        "longDescription": "Find and install the right NVIDIA skill for work across GPU acceleration, CUDA, AI agents, data loading, training, inference, robotics, Physical AI, Omniverse, simulation, and more. The plugin checks NVIDIA's live skills catalog, recommends the best match, and provides an install command and a useful first prompt.",
+        "longDescription": "Find and install the right NVIDIA skill across GPU acceleration, CUDA, data science, AI agents, model training and inference, Jetson and robotics, Physical AI and Omniverse, decision optimization, healthcare, speech, and DOCA networking. The plugin searches NVIDIA's live verified catalog, recommends up to three precise matches, and provides install commands and useful first prompts without preloading the catalog.",
         "developerName": "NVIDIA",
         "category": "Developer Tools",
         "capabilities": [
@@ -44,9 +54,9 @@
         "composerIcon": "./assets/nvidia.png",
         "brandColor": "#76b900",
         "defaultPrompt": [
-            "Which NVIDIA skills can help with simulation and robotics?",
-            "How can I turn real-world driving footage into a 3D neural scene for simulation?",
-            "Help me deploy a secure OpenClaw agent."
+            "Find the best NVIDIA skills for my GPU or accelerated-computing task.",
+            "Which NVIDIA skills fit my Jetson, robotics, or Physical AI workflow?",
+            "Help me choose NVIDIA skills for medical imaging, speech, optimization, or DOCA networking."
         ]
     }
 }
