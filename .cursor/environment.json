@@ -1,0 +1,4 @@
+{
+  "name": "NVIDIA Agent Skills catalog",
+  "install": "pip3 install --break-system-packages --upgrade pyyaml ruamel.yaml jsonschema requests"
+}
