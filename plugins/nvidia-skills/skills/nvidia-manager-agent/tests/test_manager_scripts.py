@@ -119,6 +119,8 @@ class SuggestWorkflowsTests(unittest.TestCase):
                 str(CATALOG),
                 "--limit",
                 "3",
+                "--format",
+                "json",
             ],
         )
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -138,12 +140,50 @@ class SuggestWorkflowsTests(unittest.TestCase):
                 str(CATALOG),
                 "--limit",
                 "5",
+                "--format",
+                "json",
             ],
         )
         self.assertEqual(result.returncode, 0, result.stderr)
         payload = json.loads(result.stdout)
         ids = [row["id"] for row in payload["suggestions"]]
         self.assertIn("playbook-specialist", ids)
+
+    def test_plan_format_is_the_default_and_needs_no_reformatting(self) -> None:
+        result = run_script(
+            "suggest_workflows.py",
+            [
+                "--goal",
+                "Run a DEFT loop until ChangeNet FAR is low enough",
+                "--catalog",
+                str(CATALOG),
+                "--limit",
+                "2",
+            ],
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        lines = result.stdout.splitlines()
+        self.assertEqual(lines[0], "Suggested workflows (highest first):")
+        self.assertRegex(
+            lines[1], r"^1\. tao-run-deft-aoi \(loop, skill=.+ score=\d+\) — "
+        )
+        self.assertTrue(any(line.startswith("   First prompt: ") for line in lines))
+        self.assertEqual(lines[-1], "Live catalog checked?: no (bundled index only)")
+        self.assertNotIn("{", result.stdout)
+
+    def test_plan_format_reports_an_empty_shortlist(self) -> None:
+        result = run_script(
+            "suggest_workflows.py",
+            [
+                "--goal",
+                "zzzz",
+                "--catalog",
+                str(CATALOG),
+            ],
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("none matched", result.stdout)
+        self.assertIn("do not invent a slug", result.stdout)
 
     def test_live_catalog_merges_and_bundled_wins(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -172,6 +212,8 @@ class SuggestWorkflowsTests(unittest.TestCase):
                     str(live),
                     "--limit",
                     "8",
+                    "--format",
+                    "json",
                 ],
             )
             self.assertEqual(result.returncode, 0, result.stderr)
@@ -202,7 +244,10 @@ class LogLoopEventTests(unittest.TestCase):
                 ],
             )
             self.assertEqual(first.returncode, 0, first.stderr)
-            self.assertEqual(json.loads(first.stdout)["seq"], 1)
+            self.assertEqual(
+                first.stdout.strip(),
+                "manager iter=1 stage=plan status=ok seq=1 — first",
+            )
 
             with log_path.open("a", encoding="utf-8") as handle:
                 handle.write("not-json\n")
@@ -220,6 +265,7 @@ class LogLoopEventTests(unittest.TestCase):
                     "ok",
                     "--summary",
                     "second",
+                    "--json",
                 ],
             )
             self.assertEqual(second.returncode, 0, second.stderr)

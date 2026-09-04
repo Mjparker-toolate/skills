@@ -28,7 +28,7 @@ Read disk; do not trust values pasted in the prompt except those paths.
 4. **evaluate** against `success_criteria`. Prefer eval or KPI files on
    disk. Log evaluate with pass/fail in `--summary`.
 5. Do **not** log `decide` or `stop`. The parent logs those.
-6. Print one status line from the last event you wrote, then exit.
+6. Echo the status line the last `log_loop_event.py` call printed, then exit.
 
 ## Logging
 

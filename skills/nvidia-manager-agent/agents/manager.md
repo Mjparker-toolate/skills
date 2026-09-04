@@ -35,4 +35,5 @@ You orchestrate. You do not reimplement product skills.
 - `agents/loop-runner.md` once per iteration
 - `agents/trainer.md` to init or revise a specialist
 
-Print one status line after every logged stage, using values from disk.
+Print one status line after every logged stage: echo the line
+`log_loop_event.py` printed rather than rebuilding it.

@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 # SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
-"""Append one loop event to loop_log.jsonl with a monotonic seq from disk."""
+"""Append one loop event to loop_log.jsonl with a monotonic seq from disk.
+
+Prints the protocol status line so the caller can echo it verbatim; pass
+--json when a caller needs the stored event object instead.
+"""
 
 from __future__ import annotations
 
@@ -33,6 +37,14 @@ def next_seq(log_path: Path) -> int:
     return seq + 1
 
 
+def status_line(event: dict) -> str:
+    """The one line references/loop-protocol.md requires after every stage."""
+    return (
+        f"manager iter={event['iteration']} stage={event['stage']} "
+        f"status={event['status']} seq={event['seq']} — {event['summary']}"
+    )
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--log-path", required=True, type=Path)
@@ -41,6 +53,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--status", required=True, choices=VALID_STATUSES)
     parser.add_argument("--summary", required=True)
     parser.add_argument("--duration-sec", type=int, default=None)
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        dest="as_json",
+        help="Print the stored event object instead of the status line.",
+    )
     args = parser.parse_args(argv)
 
     if args.iteration < 0:
@@ -60,7 +78,10 @@ def main(argv: list[str] | None = None) -> int:
     }
     with log_path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(event, separators=(",", ":")) + "\n")
-    print(json.dumps(event))
+    if args.as_json:
+        print(json.dumps(event))
+    else:
+        print(status_line(event))
     return 0
 
 

@@ -53,6 +53,11 @@ token overlap against `triggers`, `title`, `when`, and `kind`. Prefer:
 Return at most five rows. Each row must include: `id`, `kind`, `skill`,
 `score`, `why`, `first_prompt`, and `install_hint`.
 
+`--format plan` (the default) prints those rows already formatted for the
+plan below, plus the `Live catalog checked?` line. Paste them under the plan
+header instead of restating them; use `--format json` only when a caller
+needs the fields as data.
+
 ## Manager Plan
 
 Print this table and stop. Do not launch loops, write playbooks (except a

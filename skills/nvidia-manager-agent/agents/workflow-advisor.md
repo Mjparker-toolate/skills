@@ -25,9 +25,12 @@ python3 "{skill_root}/scripts/suggest_workflows.py" \
   --limit 5
 ```
 
-Use `--live-catalog` if the parent provided a dump path.
+Use `--live-catalog` if the parent provided a dump path. The default
+`--format plan` already prints the suggestion rows; add `--format json` only
+when you need to filter the fields yourself.
 
-2. Return a Manager Plan in the format from `workflow-suggestion.md`.
+2. Wrap those rows in the Manager Plan header from `workflow-suggestion.md`.
+   Do not retype or reorder the rows the script printed.
 3. Do not approve the plan yourself. Do not run product skills.
 
 ## Output

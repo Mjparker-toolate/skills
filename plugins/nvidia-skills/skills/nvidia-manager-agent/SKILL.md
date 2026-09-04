@@ -11,7 +11,7 @@ license: CC-BY-4.0 AND Apache-2.0
 compatibility: Requires Python 3 and an agent that can spawn subagents and run bundled scripts.
 metadata:
   author: NVIDIA
-  version: "0.1.0"
+  version: "0.2.0"
   tags:
     - nvidia
     - manager
@@ -177,13 +177,17 @@ source of truth.
 | Script | Purpose | Arguments |
 |---|---|---|
 | `scripts/init_manager_state.py` | Create `manager_state.json` atomically. Refuses to overwrite without `--force`. | `--workspace PATH --goal TEXT --mode {suggest,loop,train} --max-iterations N [--success-criterion TEXT ...] [--force]` |
-| `scripts/suggest_workflows.py` | Rank bundled (and optional live) workflows against a goal. Prints JSON. | `--goal TEXT --catalog PATH [--live-catalog PATH] [--limit N]` |
-| `scripts/log_loop_event.py` | Append one JSONL event with a monotonic `seq` read from disk. | `--log-path PATH --iteration N --stage {plan,execute,evaluate,decide,stop} --status {ok,error,continue,done} --summary TEXT [--duration-sec N]` |
+| `scripts/suggest_workflows.py` | Rank bundled (and optional live) workflows against a goal. Prints Manager Plan rows; `--format json` for full objects. | `--goal TEXT --catalog PATH [--live-catalog PATH] [--limit N] [--format {plan,json}]` |
+| `scripts/log_loop_event.py` | Append one JSONL event with a monotonic `seq` read from disk. Prints the status line to echo; `--json` for the event object. | `--log-path PATH --iteration N --stage {plan,execute,evaluate,decide,stop} --status {ok,error,continue,done} --summary TEXT [--duration-sec N] [--json]` |
 | `scripts/train_agent.py` | Init or revise a specialist playbook and append `training_log.jsonl`. | `--workspace PATH --agent-name NAME --goal TEXT --action {init,revise,record-eval} [--notes TEXT] [--eval-json PATH]` |
 
 Run via `run_script()` when the harness provides it; otherwise `python3`
 with absolute paths. Never write `loop_log.jsonl` with `echo` or inline
 `jq` — `seq` must come from `log_loop_event.py`.
+
+Both scripts print the wording the protocol asks for. Echo those lines
+instead of re-rendering them from JSON, and read `--format json` /
+`--json` only when a subagent needs the fields.
 
 ## Agents
 

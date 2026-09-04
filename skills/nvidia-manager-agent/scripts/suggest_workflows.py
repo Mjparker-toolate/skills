@@ -3,7 +3,8 @@
 # SPDX-License-Identifier: Apache-2.0
 """Rank bundled (and optional live) workflows against a user goal.
 
-Prints a JSON object with a `suggestions` array. Does not install skills.
+Prints Manager Plan rows (`--format plan`, default) or a JSON object with a
+`suggestions` array (`--format json`). Does not install skills.
 """
 
 from __future__ import annotations
@@ -16,6 +17,9 @@ from pathlib import Path
 from typing import Any
 
 TOKEN_RE = re.compile(r"[a-z0-9]+")
+STOP_TOKENS = frozenset({"the", "and", "for", "with", "this", "that", "from"})
+LOOP_TOKENS = frozenset({"loop", "iterate", "until"})
+TRAIN_TOKENS = frozenset({"train", "agent", "playbook"})
 
 
 def tokenize(text: str) -> set[str]:
@@ -105,38 +109,46 @@ def workflows_from_live(data: Any) -> list[dict]:
     return found
 
 
-def score_workflow(goal_tokens: set[str], item: dict) -> tuple[int, str]:
-    haystacks = [
-        item.get("id") or "",
-        item.get("skill") or "",
-        item.get("title") or "",
-        item.get("when") or "",
-        item.get("kind") or "",
-        " ".join(item.get("triggers") or []),
-    ]
-    blob = " ".join(str(h) for h in haystacks)
-    item_tokens = tokenize(blob)
-    overlap = goal_tokens & item_tokens
-    score = 0
-    for token in overlap:
-        # Prefer distinctive tokens over ultra-common ones.
-        if token in {"the", "and", "for", "with", "this", "that", "from"}:
-            continue
-        score += 3 if len(token) >= 5 else 1
-        if token in tokenize(item.get("id") or "") or token in tokenize(
-            item.get("skill") or ""
-        ):
-            score += 4
-        if token in tokenize(" ".join(item.get("triggers") or [])):
-            score += 2
+def score_workflow(
+    goal_tokens: set[str], wants_loop: bool, wants_train: bool, item: dict
+) -> tuple[int, str]:
+    slug_text = f"{item.get('id') or ''} {item.get('skill') or ''}"
+    trigger_text = " ".join(str(t) for t in item.get("triggers") or [])
+    kind = str(item.get("kind") or "").lower()
 
-    kind = (item.get("kind") or "").lower()
-    if "loop" in goal_tokens or "iterate" in goal_tokens or "until" in goal_tokens:
-        if kind == "loop":
-            score += 5
-    if "train" in goal_tokens or "agent" in goal_tokens or "playbook" in goal_tokens:
-        if kind == "train":
-            score += 5
+    # One scan over every field decides whether this row is worth more work.
+    # Most rows in a full catalog dump miss entirely and stop here.
+    item_tokens = tokenize(
+        " ".join(
+            (
+                slug_text,
+                trigger_text,
+                str(item.get("title") or ""),
+                str(item.get("when") or ""),
+                kind,
+            )
+        )
+    )
+    # Ultra-common tokens match everything, so they neither score nor explain.
+    overlap = (goal_tokens & item_tokens) - STOP_TOKENS
+
+    score = 0
+    if overlap:
+        # Slug and trigger hits outrank prose hits, so those two fields get
+        # their own scan — once per row, not once per matched token.
+        slug_tokens = tokenize(slug_text)
+        trigger_tokens = tokenize(trigger_text)
+        for token in overlap:
+            score += 3 if len(token) >= 5 else 1
+            if token in slug_tokens:
+                score += 4
+            if token in trigger_tokens:
+                score += 2
+
+    if wants_loop and kind == "loop":
+        score += 5
+    if wants_train and kind == "train":
+        score += 5
 
     why_bits = sorted(overlap)
     why = (
@@ -163,9 +175,11 @@ def merge_workflows(bundled: list[dict], live: list[dict]) -> list[dict]:
 
 def rank(goal: str, bundled: list[dict], live: list[dict], limit: int) -> list[dict]:
     goal_tokens = tokenize(goal)
+    wants_loop = bool(goal_tokens & LOOP_TOKENS)
+    wants_train = bool(goal_tokens & TRAIN_TOKENS)
     ranked: list[tuple[int, dict, str]] = []
     for item in merge_workflows(bundled, live):
-        score, why = score_workflow(goal_tokens, item)
+        score, why = score_workflow(goal_tokens, wants_loop, wants_train, item)
         ranked.append((score, item, why))
     ranked.sort(key=lambda row: (-row[0], str(row[1].get("id") or "")))
     suggestions = []
@@ -189,12 +203,48 @@ def rank(goal: str, bundled: list[dict], live: list[dict], limit: int) -> list[d
     return suggestions
 
 
+def format_plan(payload: dict) -> str:
+    """Render the Manager Plan rows described in references/workflow-suggestion.md.
+
+    The manager pastes these lines straight into the plan, so the script emits
+    the final wording instead of JSON the agent has to restate.
+    """
+    lines: list[str] = []
+    suggestions = payload["suggestions"]
+    if suggestions:
+        lines.append("Suggested workflows (highest first):")
+        for position, row in enumerate(suggestions, start=1):
+            lines.append(
+                f"{position}. {row['id']} ({row['kind']}, skill={row['skill']}, "
+                f"score={row['score']}) — {row['why']}"
+            )
+            if row["first_prompt"]:
+                lines.append(f"   First prompt: {row['first_prompt']}")
+            if row["install_hint"]:
+                lines.append(f"   Install (ask first): {row['install_hint']}")
+    else:
+        lines.append(
+            "Suggested workflows: none matched. Ask the user to restate the goal "
+            "or name a skill; do not invent a slug."
+        )
+    checked = "yes" if payload["live_catalog_checked"] else "no (bundled index only)"
+    lines.append(f"Live catalog checked?: {checked}")
+    return "\n".join(lines)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--goal", required=True)
     parser.add_argument("--catalog", required=True, type=Path)
     parser.add_argument("--live-catalog", type=Path, default=None)
     parser.add_argument("--limit", type=int, default=5)
+    parser.add_argument(
+        "--format",
+        choices=("plan", "json"),
+        default="plan",
+        dest="output_format",
+        help="plan: Manager Plan rows (default). json: full objects for tooling.",
+    )
     args = parser.parse_args(argv)
 
     if args.limit < 1:
@@ -232,7 +282,10 @@ def main(argv: list[str] | None = None) -> int:
         "live_catalog_checked": live_checked,
         "suggestions": suggestions,
     }
-    json.dump(payload, sys.stdout, indent=2)
+    if args.output_format == "json":
+        json.dump(payload, sys.stdout, indent=2)
+    else:
+        sys.stdout.write(format_plan(payload))
     sys.stdout.write("\n")
     return 0
 

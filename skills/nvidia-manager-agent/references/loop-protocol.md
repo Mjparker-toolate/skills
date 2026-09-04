@@ -90,7 +90,9 @@ After every logged stage, print exactly one line:
 manager iter=<n> stage=<stage> status=<status> seq=<seq> — <summary>
 ```
 
-The values must come from the event just written to disk.
+`log_loop_event.py` prints that line on stdout after it appends the event.
+Echo it verbatim; do not rebuild it by hand or re-read the log to render it.
+Pass `--json` instead when a caller needs the event fields as data.
 
 ## What the loop must not do
 
