@@ -4627,7 +4627,7 @@
       "verdict": "FAIL",
       "agents": [],
       "catalog_dir": "nvidia-manager-agent",
-      "component": "NVIDIA Skills",
+      "component": "NVIDIA Manager Agent",
       "has_results": false,
       "average_uplift_pct": null
     },
