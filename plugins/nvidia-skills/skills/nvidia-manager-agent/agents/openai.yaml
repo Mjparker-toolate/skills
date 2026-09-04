@@ -1,0 +1,7 @@
+interface:
+  display_name: "NVIDIA Manager Agent"
+  short_description: "Suggest workflows, run loop pipelines, and train specialist agents."
+  default_prompt: "Use $nvidia-manager-agent to suggest a workflow, run a loop until the goal is met, or train a specialist agent."
+
+policy:
+  allow_implicit_invocation: true

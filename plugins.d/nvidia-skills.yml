@@ -1,11 +1,11 @@
 name: nvidia-skills
 
-version: "1.4.0"
-description: Find the right NVIDIA skill for GPU acceleration, CUDA, AI agents, data loading, training, inference, robotics, Physical AI, Omniverse, simulation, and other NVIDIA-powered workflows.
+version: "1.5.0"
+description: Find the right NVIDIA skill, then orchestrate workflow suggestion, iterative loops, and specialist playbook training across GPU, CUDA, AI, robotics, and Physical AI workflows.
 
 display_name: NVIDIA Skills
-short_description: Find the right NVIDIA skill
-long_description: Find and install the right NVIDIA skill for work across GPU acceleration, CUDA, AI agents, data loading, training, inference, robotics, Physical AI, Omniverse, simulation, and more. The plugin checks NVIDIA's live skills catalog, recommends the best match, and provides an install command and a useful first prompt.
+short_description: Find NVIDIA skills and run manager workflows
+long_description: Find and install the right NVIDIA skill for work across GPU acceleration, CUDA, AI agents, data loading, training, inference, robotics, Physical AI, Omniverse, simulation, and more. The bundled finder checks NVIDIA's live skills catalog, recommends the best match, and provides an install command and a useful first prompt. The bundled manager suggests NVIDIA workflows to run, executes plan-execute-evaluate loops, and trains specialist agent playbooks.
 
 category: Developer Tools
 logo: ./assets/nvidia.png
@@ -36,21 +36,26 @@ default_prompts:
   - "Which NVIDIA skills can help with simulation and robotics?"
   - "How can I turn real-world driving footage into a 3D neural scene for simulation?"
   - "Help me deploy a secure OpenClaw agent."
+  - "Suggest which NVIDIA workflow I should run next, then start a manager loop."
 
-# This plugin ships a single skill: nvidia-skill-finder.
+# This plugin ships two catalog-infrastructure skills:
+#   nvidia-skill-finder   — discovery-first router to the rest of the catalog
+#   nvidia-manager-agent  — orchestrator: suggest workflows, run loops, train playbooks
 #
-# The new approach is discovery-first. Instead of bundling a curated subset
-# of skills into the plugin (which loads every SKILL.md into the harness
-# context on install and crowds the limited skill context space), the plugin
-# ships only the finder. The finder routes users to any skill in the canonical
-# ./skills/ catalog on demand, so the full catalog is reachable without paying
-# the context cost of pre-loading it.
+# Product skills stay out of the plugin. Bundling them would load every
+# SKILL.md into the harness context on install and crowd the limited skill
+# context space. The finder routes users to any skill in the canonical
+# ./skills/ catalog on demand; the manager orchestrates those skills after
+# they are installed. Both are registered here so plugin marketplaces
+# (Claude, Codex, Cursor) ship them with the plugin, not only via
+# `npx skills add`.
 #
-# It also decouples versioning: individual skills are version-managed in the
-# catalog independently of this plugin's version, so a skill update no longer
-# forces a plugin re-release (and vice versa).
+# Individual skills are version-managed in the catalog independently of
+# this plugin's version. Adding or removing a bundled skill still requires
+# a plugin version bump (handled by version-plugins.py).
 include_skills:
   - skills/nvidia-skill-finder/
+  - skills/nvidia-manager-agent/
 
 
 # Inherits from plugins.d/_defaults.yml:

@@ -1,7 +1,7 @@
 {
     "name": "nvidia-skills",
-    "version": "1.4.0",
-    "description": "Find the right NVIDIA skill for GPU acceleration, CUDA, AI agents, data loading, training, inference, robotics, Physical AI, Omniverse, simulation, and other NVIDIA-powered workflows.",
+    "version": "1.5.0",
+    "description": "Find the right NVIDIA skill, then orchestrate workflow suggestion, iterative loops, and specialist playbook training across GPU, CUDA, AI, robotics, and Physical AI workflows.",
     "author": {
         "name": "NVIDIA",
         "url": "https://github.com/NVIDIA/skills"
@@ -29,8 +29,8 @@
     "skills": "./skills/",
     "interface": {
         "displayName": "NVIDIA Skills",
-        "shortDescription": "Find the right NVIDIA skill",
-        "longDescription": "Find and install the right NVIDIA skill for work across GPU acceleration, CUDA, AI agents, data loading, training, inference, robotics, Physical AI, Omniverse, simulation, and more. The plugin checks NVIDIA's live skills catalog, recommends the best match, and provides an install command and a useful first prompt.",
+        "shortDescription": "Find NVIDIA skills and run manager workflows",
+        "longDescription": "Find and install the right NVIDIA skill for work across GPU acceleration, CUDA, AI agents, data loading, training, inference, robotics, Physical AI, Omniverse, simulation, and more. The bundled finder checks NVIDIA's live skills catalog, recommends the best match, and provides an install command and a useful first prompt. The bundled manager suggests NVIDIA workflows to run, executes plan-execute-evaluate loops, and trains specialist agent playbooks.",
         "developerName": "NVIDIA",
         "category": "Developer Tools",
         "capabilities": [
@@ -46,7 +46,8 @@
         "defaultPrompt": [
             "Which NVIDIA skills can help with simulation and robotics?",
             "How can I turn real-world driving footage into a 3D neural scene for simulation?",
-            "Help me deploy a secure OpenClaw agent."
+            "Help me deploy a secure OpenClaw agent.",
+            "Suggest which NVIDIA workflow I should run next, then start a manager loop."
         ]
     }
 }
