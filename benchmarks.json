@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "source": "skills/*/BENCHMARK.md",
-  "skill_count": 343,
+  "skill_count": 344,
   "result_row_count": 3210,
   "skills_without_results": [
     "deepstream-generate-pipeline",
@@ -19,6 +19,7 @@
     "mcore-split-pr",
     "mcore-testing",
     "nemoclaw-user-guide",
+    "nvidia-manager-agent",
     "physical-ai-infrastructure-setup-and-resilient-scaling",
     "rag-blueprint",
     "rag-eval",
@@ -4612,6 +4613,23 @@
       "component": "Medical AI Skills",
       "has_results": true,
       "average_uplift_pct": 29.5
+    },
+    {
+      "skill": "nvidia-manager-agent",
+      "evaluation_date": "2026-09-04",
+      "environment": null,
+      "evaluator_version": null,
+      "dataset_digest": null,
+      "validation_status": null,
+      "tasks": null,
+      "attempts_per_task": null,
+      "pass_threshold_pct": null,
+      "verdict": "FAIL",
+      "agents": [],
+      "catalog_dir": "nvidia-manager-agent",
+      "component": "NVIDIA Skills",
+      "has_results": false,
+      "average_uplift_pct": null
     },
     {
       "skill": "nvidia-skill-finder",
