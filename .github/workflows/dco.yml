@@ -48,7 +48,11 @@ jobs:
 
           unsigned=()
           while read -r sha; do
-            if ! git show --format='%(trailers:key=Signed-off-by,valueonly)' -s "$sha" | grep -q .; then
+            # Match Signed-off-by on a line of its own in the commit body.
+            # Do not use %(trailers:): git only parses the last trailer
+            # paragraph, so a following Co-authored-by block (often injected
+            # after a blank line) hides a valid Signed-off-by above it.
+            if ! git show --format='%B' -s "$sha" | grep -qE '^Signed-off-by: .+'; then
               subject=$(git show --format='%s' -s "$sha")
               unsigned+=("$sha $subject")
             fi

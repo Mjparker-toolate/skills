@@ -21,6 +21,8 @@ jobs:
       contents: read
       pull-requests: read
       statuses: read
-    uses: NVIDIA/skills/.github/workflows/team-request.yml@main
+    # Use the local reusable workflow so forks pick up local skip rules.
+    # NVIDIA/skills@main cannot see fork-local edits to require-nvskills-status.yml.
+    uses: ./.github/workflows/team-request.yml
     secrets:
       NVSKILLS_CI_DISPATCH_TOKEN: ${{ secrets.NVSKILLS_CI_DISPATCH_TOKEN }}

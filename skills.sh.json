@@ -24,6 +24,7 @@
         "nemo-retriever",
         "nemoclaw-user-guide",
         "nemotron-policy-generator",
+        "nvidia-manager-agent",
         "nvidia-skill-finder",
         "rag-blueprint",
         "rag-eval",

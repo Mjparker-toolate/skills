@@ -13,7 +13,10 @@ permissions:
 
 jobs:
   require-nvskills-ci:
-    if: github.event_name == 'pull_request'
+    # NVSkills CI dispatches into NVIDIA/nvskills-ci and is only reachable
+    # from NVIDIA-owned repos with NVSKILLS_CI_DISPATCH_TOKEN. Forks would
+    # otherwise fail after the missing-status grace period.
+    if: github.event_name == 'pull_request' && github.repository_owner == 'NVIDIA'
     permissions:
       contents: read
       pull-requests: read

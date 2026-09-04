@@ -2893,6 +2893,18 @@
       }
     },
     {
+      "path": "skills/nvidia-manager-agent",
+      "name": "nvidia-manager-agent",
+      "description": "Use when the user wants a manager agent to train other agents, run iterative loop workflows, or suggest which workflows to run next. Trigger on manager agent, train an agent, agent playbook, loop workflow, iterate until, suggest a workflow, orchestrate skills, or run a multi-stage NVIDIA pipeline. Do not use for one-shot skill discovery (use nvidia-skill-finder), standalone model training without an agent loop, or generic coding tasks.",
+      "metadata": {
+        "product.primary": "Learning",
+        "classification.category.primary": "developer_tools",
+        "catalog.subdomain": "agentic-ai",
+        "audience": "developer,application_developer,solutions_architect,ai_engineer,platform_engineer",
+        "discovery.activity_tags": "orchestrate,select,train,evaluate,configure"
+      }
+    },
+    {
       "path": "skills/nvidia-skill-finder",
       "name": "nvidia-skill-finder",
       "description": "Use for NVIDIA-related requests where an NVIDIA skill might help, even if the user did not ask for a skill. Trigger on NVIDIA products, hardware, software, SDKs, GPUs, Jetson/JetPack/L4T/BSP/SDK Manager/driver/flashing/setup, CUDA, NIM, NeMo, Omniverse/OpenUSD/SimReady, RAPIDS/cuDF, cuPyNumeric, cuOpt, Dynamo, Holoscan, TensorRT, DeepStream, VSS, TAO, NGC/NVCF. Do not use for generic non-NVIDIA route, optimize, deploy, AI, video, data, or infrastructure tasks.",

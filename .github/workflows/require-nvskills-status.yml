@@ -46,6 +46,16 @@ jobs:
             printf '%s\n' "$@" | tee -a "${GITHUB_STEP_SUMMARY}"
           }
 
+          if [ "${owner}" != "NVIDIA" ]; then
+            append_summary \
+              "## NVSkills CI required status" \
+              "" \
+              "Skipped: NVSkills CI is required only on NVIDIA-owned repositories (current: \`${REPO}\`)." \
+              "" \
+              "Forks cannot dispatch \`NVIDIA/nvskills-ci\` or post the \`NVSkills CI\` commit status."
+            exit 0
+          fi
+
           positive_integer() {
             case "$1" in
               ''|*[!0-9]*|0) printf '%s' "$2" ;;
