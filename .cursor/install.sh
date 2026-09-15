@@ -29,7 +29,7 @@ log() { printf '\033[1;32m[install]\033[0m %s\n' "$*"; }
 
 # --- system package: rsync -------------------------------------------------
 if command -v rsync >/dev/null 2>&1; then
-  log "rsync present: $(rsync --version | head -1)"
+  log "rsync present: $(rsync --version | sed -n 1p)"
 else
   log "installing rsync via apt"
   sudo apt-get update -qq
@@ -68,7 +68,7 @@ python3 -m pip install --user --break-system-packages --upgrade \
 # binary is resolvable by the agent and by the docs-preview terminal without
 # any shell-rc edits.
 if command -v fern >/dev/null 2>&1; then
-  log "fern present: $(fern --version 2>/dev/null | head -1)"
+  log "fern present: $(fern --version 2>/dev/null | sed -n 1p)"
 elif command -v npm >/dev/null 2>&1; then
   node_prefix="$(dirname "$(dirname "$(command -v npm)")")"
   log "installing fern-api into ${node_prefix} (nvm node dir)"
