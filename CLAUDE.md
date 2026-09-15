@@ -1,7 +1,7 @@
 # Claude Code Configuration
 
 ## Repository Overview
-This repository hosts installed agent skills (Vercel Labs, NVIDIA) available to Claude Code via the Skill tool.
+This repository hosts installed agent skills (Vercel Labs, NVIDIA, Apify, AWS) available to Claude Code via the Skill tool.
 
 ## NVIDIA Skill Policy
 
@@ -46,6 +46,40 @@ or a targeted skill-name match), then invoke only the skill(s) actually needed.
 ### NVIDIA Skills
 See `.agents/skills/` for the full installed catalog, or invoke
 `nvidia-skill-finder` to discover the right one for a given task.
+
+### Apify Skills
+- `apify-ultimate-scraper` — Web scraping and data extraction across ~100
+  Apify Actors (social, search, maps, marketplaces) via the Apify CLI.
+  Needs `apify-cli` and an authenticated session (`APIFY_TOKEN`); the skill
+  verifies both before it runs anything.
+
+### AWS Skills
+- `amplify-workflow` — AWS Amplify Gen2 full-stack development: auth, data,
+  storage, functions, and the AI kit, plus per-framework frontend wiring.
+
+## Skill Bootstrap
+
+Installing a skill writes three artifacts that have to agree:
+
+1. `.agents/skills/<name>/` — the vendored skill content.
+2. `skills-lock.json` — where the content came from, plus the folder hash
+   recorded at install time.
+3. `.claude/skills/<name>` — a relative symlink into `.agents/skills/`.
+
+Miss one and the skill half-exists without saying so: a vendored folder with
+no lock entry is invisible to `npx skills list`/`update`, and a lock entry
+with no symlink never loads in Claude Code. Verify all three with:
+
+```bash
+python3 .github/scripts/bootstrap_skills.py --check
+```
+
+Use that script's `--add` to bootstrap a skill from a local folder (a Cursor
+plugin cache, say) instead of hand-editing the three artifacts; it computes
+the same folder hash the skills CLI does. Content drift against a recorded
+hash is reported as a warning, not an error — the hash records the folder as
+installed, so for a locally-patched skill the drift is the true state and the
+hash is never silently rewritten.
 
 ## Other Requirements
 1. **Security** — Token handling follows secure practices (no secret exposure)
