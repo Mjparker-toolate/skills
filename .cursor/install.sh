@@ -59,13 +59,22 @@ python3 -m pip install --user --break-system-packages --upgrade \
 
 # --- Fern CLI for the docs site --------------------------------------------
 # The `fern-api` launcher respects the version pinned in fern/fern.config.json,
-# so we do not pin the npm package itself. Installed into /usr/local so the
-# `fern` binary lands on the default PATH without shell-rc edits.
+# so we do not pin the npm package itself.
+#
+# node/npm are nvm-managed under $HOME, so they are NOT on sudo's secure_path
+# (a plain `sudo npm ...` fails with "npm: command not found"). Install as the
+# normal user with an explicit --prefix pointing at the active nvm node dir.
+# That dir's bin is the one nvm puts on PATH in login shells, so the `fern`
+# binary is resolvable by the agent and by the docs-preview terminal without
+# any shell-rc edits.
 if command -v fern >/dev/null 2>&1; then
   log "fern present: $(fern --version 2>/dev/null | head -1)"
+elif command -v npm >/dev/null 2>&1; then
+  node_prefix="$(dirname "$(dirname "$(command -v npm)")")"
+  log "installing fern-api into ${node_prefix} (nvm node dir)"
+  npm install -g --prefix "$node_prefix" fern-api
 else
-  log "installing fern-api into /usr/local"
-  sudo npm install -g --prefix /usr/local fern-api
+  log "WARNING: npm not found — skipping fern-api install (docs preview unavailable)"
 fi
 
 log "bootstrap complete"
