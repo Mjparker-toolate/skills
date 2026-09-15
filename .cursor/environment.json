@@ -1,0 +1,15 @@
+{
+  "name": "NVIDIA Agent Skills",
+  "install": "bash .cursor/install.sh",
+  "terminals": [
+    {
+      "name": "fern-docs-dev",
+      "command": "fern docs dev --port 3000",
+      "description": "Local Fern documentation preview server for the docs in fern/ (site at http://localhost:3000, backend on 3001)."
+    }
+  ],
+  "ports": [
+    { "name": "docs preview", "port": 3000 },
+    { "name": "docs backend", "port": 3001 }
+  ]
+}
