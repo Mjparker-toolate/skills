@@ -11,5 +11,14 @@
   "ports": [
     { "name": "docs preview", "port": 3000 },
     { "name": "docs backend", "port": 3001 }
+  ],
+  "mcpServerAllowlist": [
+    {
+      "name": "Supermemory",
+      "serverUrl": "https://mcp.supermemory.ai/mcp"
+    }
+  ],
+  "egressAllowlist": [
+    "mcp.supermemory.ai"
   ]
 }
