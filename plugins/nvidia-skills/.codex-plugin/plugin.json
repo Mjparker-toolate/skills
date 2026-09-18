@@ -1,6 +1,6 @@
 {
     "name": "nvidia-skills",
-    "version": "1.5.0",
+    "version": "1.6.0",
     "description": "Find the right NVIDIA skill, then orchestrate workflow suggestion, iterative loops, and specialist playbook training across GPU, CUDA, AI, robotics, and Physical AI workflows.",
     "author": {
         "name": "NVIDIA",
