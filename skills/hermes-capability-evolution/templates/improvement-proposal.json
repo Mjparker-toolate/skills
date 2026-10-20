@@ -1,0 +1,14 @@
+{
+  "observation": "Sanitized failure or success; distinguish hypothesis",
+  "evidence": ["Host call ID or regression test"],
+  "root_cause": "Verified cause or explicitly labeled hypothesis",
+  "proposed_change": "Smallest useful diff",
+  "expected_benefit": "Measurable outcome, not an invented improvement",
+  "regression_test": "Test that fails before and passes after",
+  "policy_changes": false,
+  "new_permissions": [],
+  "review_status": "proposed",
+  "baseline_revision": "Git commit before change",
+  "rollback_revision": "Known-good Git commit",
+  "private_data_removed": false
+}

@@ -1,0 +1,10 @@
+{
+  "task": "Describe the authorized task",
+  "status": "partial",
+  "summary": "Describe only observed results, not intended actions",
+  "evidence": [
+    {"call_id": "replace-with-host-ledger-call-id", "claim": "Observed output or artifact"}
+  ],
+  "skills_used": [],
+  "limitations": ["State unconfigured integrations, unavailable tools, and untested platforms"]
+}

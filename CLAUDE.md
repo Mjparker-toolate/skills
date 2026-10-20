@@ -51,3 +51,13 @@ See `.agents/skills/` for the full installed catalog, or invoke
 1. **Security** — Token handling follows secure practices (no secret exposure)
 2. **Production Safety** — Deployment operations include branch protection
 3. **Cross-Platform Support** — All scripts handle Windows and Unix paths
+
+## Hermes Capability Workflows
+
+For capability expansion, extracting reusable skills from authorized projects,
+tool discovery/routing, Hermes integrations, or evidence-based self-improvement,
+load `skills/hermes-capability-evolution/SKILL.md` before implementing the workflow.
+Treat Hermes Agent and the Anthropic workspace labeled Hermes as distinct targets.
+Keep browser operations in Helium's Home profile only; authorized connectors may
+be used directly. Preserve host approval gates and review skill improvements;
+repository inclusion does not prove installation in a live Hermes or Cue profile.

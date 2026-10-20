@@ -1,0 +1,7 @@
+name: hermes-capability-evolution
+version: 1.0.0
+description: Local capability retrieval, advisory policy checks, and report reference validation; no external execution.
+provides_tools:
+  - capability_search
+  - capability_preflight
+  - capability_report_check
