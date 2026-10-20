@@ -3,3 +3,5 @@ __pycache__/
 .cache/
 *.audit.jsonl
 manifest.local.json
+run-state.local.json
+receipt.local.json

@@ -37,3 +37,9 @@ Repository inclusion makes the skill available to users of this catalog; it does
 ## Validation
 
 Run the skill-creator validator and all bundled tests. The scripts use Python's standard library and relative paths. Linux functional execution is tested; macOS and Windows portability is designed but must be directly verified on those systems before claiming native execution there.
+
+The repository's `Validate Hermes Capability Evolution` workflow automatically checks matching pushes and pull requests on Linux, macOS, and Windows. It validates structure, local references, checkpoint templates, sync preservation, and offline helper/plugin regressions. A configured CI matrix is not a passing run: inspect the actual result before claiming cross-platform execution. This workflow never calls a model, installs the skill into a live runtime, or publishes changes.
+
+## Separately authorized remote operations
+
+For an explicitly requested phone/gateway deployment, inspect the installed Hermes version's supported setup first. Verify pairing or allowed-user restrictions, host-enforced approvals, supervised service health, and a reachable awake host; test an authorized round trip after terminal closure. Do not equate closing a terminal with sleeping the host. Do not configure Telegram, open network access, install a service, or enable telemetry merely because forwarded content recommends it. No remote-control service or unattended source-intake listener is delivered by this package.

@@ -41,3 +41,5 @@ Keep the Hermes workspace distinct from Hermes Agent profiles. Inspect the actua
 - [Hermes skill discovery and external directories](https://github.com/Mjparker-toolate/hermes-agent/blob/d7e1652511812feff4bfb1165157959ab4b18a34/website/docs/user-guide/features/skills.md).
 
 No external skill source code was copied into this package.
+
+For the later forwarded-post review, adopted harness patterns, and explicit exclusions, read [source review](source-review.md). Use [automatic execution](automatic-execution.md) for bounded execution and durable checkpoints; these additions do not configure the source project's integrations or change the native plugin's three-tool interface.

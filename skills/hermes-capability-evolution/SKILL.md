@@ -1,6 +1,6 @@
 ---
 name: hermes-capability-evolution
-description: Discover available tools and skills, extract reusable workflows from authorized projects, implement tested capability helpers for Hermes Agent and the Anthropic workspace labeled Hermes, and improve from verified outcomes. Use for capability expansion, tool routing, skill extraction, deferred tool discovery, integration safety checks, and evidence-based self-improvement.
+description: Discover available tools and skills, review forwarded sources, extract reusable workflows from authorized projects, implement tested capability helpers for Hermes Agent and the Anthropic workspace labeled Hermes, and improve from verified outcomes. Use for authorized automatic capability evolution, source-to-skill updates, tool routing, skill extraction, deferred tool discovery, integration safety checks, and evidence-based self-improvement.
 ---
 
 # Hermes Capability Evolution
@@ -25,6 +25,12 @@ Expand useful capabilities from what is actually available, not what a project d
 6. **Verify and report.** Record actual tool calls, failures, and concrete artifacts. Validate an AgentReport against the host-owned call ledger and installed skill list, using [report template](templates/agent-report.json). Reject fabricated tool evidence, nonexistent skills, and unapproved writes. Distinguish tested helpers from configured integrations and live-verified outcomes.
 7. **Learn safely.** Follow the bounded improvement loop below. Make no automatic privilege or policy changes.
 
+## Automatically handle authorized source-to-skill work
+
+When the user forwards sources and authorizes this workflow, carry out retrieval → relevance review → smallest useful patch → independent review → validation → authorized commit/delivery without asking for each routine step again. Reuse existing host authorization; do not replace it with a model-generated approval flag. Read [automatic execution and checkpoints](references/automatic-execution.md) for source triage, retry limits, receipts, and resumption rules. Consult the [six-post review](references/source-review.md) for the evidence and exclusions behind these additions.
+
+Treat automatic execution as bounded work on the named repository, not permission to install post-advertised plugins, enable trading, change providers, configure a gateway, or create a recurring monitor. Continue only within the existing contract. Notify immediately on scope/risk changes and otherwise give a short keep-alive after roughly two or three meaningful phases. If no relevant verified material survives review, report a no-op instead of manufacturing a diff.
+
 ## Executable tools
 
 Resolve all paths relative to this SKILL.md. Use the host's Python 3 interpreter (`python3`, `python`, or `py` as appropriate), quoting paths. The examples assume the current directory is this skill directory.
@@ -34,10 +40,13 @@ python3 scripts/capability_tools.py discover --root "<authorized-skills-root>"
 python3 scripts/capability_tools.py search --manifest "<manifest.json>" --query "<task>"
 python3 scripts/capability_tools.py gate --manifest "<manifest.json>" --id "<capability-id>"
 python3 scripts/capability_tools.py validate-report --report "<report.json>" --calls "<host-call-ledger.json>" --installed "<installed-skill-ids.json>"
+python3 scripts/run_state.py --state "<host-owned-checkpoint.json>"
 python3 -m unittest discover -s scripts -p "test_*.py"
 ```
 
 Capture discovery JSON to a local, non-versioned manifest. Do not index credentials or full private tool responses. Optional `--dense-scores` accepts a JSON mapping of capability IDs to genuine similarity scores; it does not invoke an embedding service. The helper is a local discovery/preflight/validation library, **not an external-tool executor or security sandbox**. The host must protect its call ledger; model-generated ledgers prove nothing.
+
+Keep the [run-state template](templates/run-state.json) outside the public repo when populated. The state helper validates criteria/evidence, attempt bounds, and uncertain outcomes, then gives advice only; it does not persist state, authorize tools, enforce wall-clock/spend budgets, or execute a workflow. Require the host to maintain and verify checkpoints and enforce those budgets.
 
 For Hermes integration, use the explicit external skill directory configuration in [Hermes integration](references/hermes-integration.md). Do not say the skill is installed in a user's live Hermes or Cue profile merely because it exists in GitHub or this workspace.
 
@@ -51,6 +60,8 @@ After a relevant task, capture only a concise sanitized lesson: failure/success 
 4. Run the validator and helper tests. Measure relevant retrieval recall or task success against the same fixtures; do not invent a performance gain.
 5. Review instruction changes through skill-creator. Require explicit review for new integrations, effects, data sources, permissions, or deployment changes. Do not self-approve or silently publish private lessons.
 6. Promote only within the user's existing authorization after tests and review; record commit and rollback target. Otherwise leave a proposal. Never automatically repeat a failed or uncertain write.
+
+Turn recurring failures into a targeted test, routing rule, validator, or environment fix rather than repeatedly adding prompt adjectives. Use a separate reviewer where available; distinguish a review verdict from host permission and deterministic test results. Preserve failed evidence as well as successful evidence in the host trace.
 
 ## Definition of done
 
