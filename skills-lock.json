@@ -43,6 +43,18 @@
       "skillPath": "skills/amc-setup-calibration-stack/SKILL.md",
       "computedHash": "d80c19c5e152af5a0a2f7530df741c42547eeee5d6b4b0c4fa563f173e76ac6b"
     },
+    "amplify-workflow": {
+      "source": "awslabs/agent-plugins",
+      "sourceType": "github",
+      "skillPath": "plugins/aws-amplify/skills/amplify-workflow/SKILL.md",
+      "computedHash": "5ce58d9f50867fc0660d371bf6ffb3f04ac8a9877f804c7feb8b2d5ca5cc1de3"
+    },
+    "apify-ultimate-scraper": {
+      "source": "apify/apify-cursor-plugin",
+      "sourceType": "github",
+      "skillPath": "apify/skills/apify-ultimate-scraper/SKILL.md",
+      "computedHash": "0b3ef268e003a48768e1ae290cf796a62205e989353a1f3250a2cf4fd8f2c107"
+    },
     "cudaq-guide": {
       "source": "NVIDIA/skills",
       "sourceType": "github",
